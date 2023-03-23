@@ -8,11 +8,13 @@
       <script>
         $(document).ready(function(){
           $("#display").val("0");
+         // document.getElementById("")
         })
         var cifra ="";
         var cont = 0;
         var ultValor = 0;
         var ultOperando="";
+        var resultado ="";
         
         
         function displayNumbers(num){
@@ -25,9 +27,15 @@
           cont=0,ultValor=0;
           cifra="",ultOperando = "";
         }
+
+        /*el uso de la recursividad en cada uno de los casos permite concatenar operaciones en la calculadora haciendo que en caso de ocurrir
+          la ultima de ellas se vaya realizando sin  dar al simbolo "=", por eso en los case / o *, hubo que realizar a la vuelta  de la 
+          recursividad dividir entre 1 o multiplicar por 1,respectivamente,  ya que si no sobresecribia el resultado de la anterior operación 
+          con el campo cifra en blanco dando errores en el resultado de la operación previa*/
         function operacion(op){
           switch(op){
             case '+':
+            if(ultOperando=="-"||ultOperando=="*"||ultOperando=="/")operacion(ultOperando);
               ultValor += Number(cifra);
               $("#display").val(ultValor);
                 
@@ -36,7 +44,13 @@
               ultOperando = op;
               break;
             case '-':
-            ultValor -= Number(cifra);
+            if(ultValor==0 && cont==0){
+                ultValor= Number(cifra);
+              }
+            else{
+              if(ultOperando=="+"||ultOperando=="*"||ultOperando=="/")operacion(ultOperando);
+              ultValor -= Number(cifra);
+            }
               $("#display").val(ultValor);
                 
               cifra = "";
@@ -46,25 +60,36 @@
             case '*':
             if(ultValor==0 && cont==0){
                 ultValor= Number(cifra);
-                $("#display").val(ultValor);
               }else{
-                ultValor *= Number(cifra);
-                $("#display").val(ultValor);
-            }
-                
+                if(ultOperando=="+"||ultOperando=="-"||ultOperando=="/"){
+                  operacion(ultOperando);
+                  ultValor*=1;
+                }else{
+                  ultValor *= Number(cifra);
+                }
+              }
+
+             $("#display").val(ultValor);
+
               cifra = "";
               cont++;
               ultOperando = op;
               break;
+
             case '/':
               if(ultValor==0 && cont==0){
                 ultValor= Number(cifra);
-                $("#display").val(ultValor);
+              }else{
+                if(ultOperando=="+"||ultOperando=="*"||ultOperando=="-"){
+                  operacion(ultOperando);
+                ultValor /= 1;
               }else{
                 ultValor /= Number(cifra);
-                $("#display").val(ultValor);
               }
-                
+              }
+              
+              $("#display").val(ultValor);
+
               cifra = "";
               cont++;
               ultOperando = op;
@@ -74,24 +99,32 @@
         function igual(){
            switch(ultOperando){
               case "+": 
-                $("#display").val(ultValor+=Number(cifra));
-                cont=0,ultValor=0;
-                cifra="",ultOperando = "";
+              resultado = ultValor+=Number(cifra)
+                $("#display").val(resultado);
+                cifra= resultado;
+                ultValor=0;
+                cont=0;
                 break;
               case '-':
-                $("#display").val(ultValor-=Number(cifra));
-                cont=0,ultValor=0;
-                cifra="",ultOperando = "";
+              resultado = ultValor-=Number(cifra)
+                $("#display").val(resultado);
+                cifra= resultado;
+                ultValor=0;
+                cont=0;
                 break;
               case '*':
-                $("#display").val(ultValor*=Number(cifra));
-                cont=0,ultValor=0;
-                cifra="",ultOperando = "";
+              resultado = ultValor*=Number(cifra)
+                $("#display").val(resultado);
+                cifra= resultado;
+                ultValor=0;
+                cont=0;
                 break;
               case '/':
-                $("#display").val(ultValor/=Number(cifra));
-                cont=0,ultValor=0;
-                cifra="",ultOperando = "";
+                resultado = ultValor/=Number(cifra)
+                $("#display").val(resultado);
+                cifra= resultado;
+                ultValor=0;
+                cont=0;
                 break;
             }
         }
@@ -109,7 +142,7 @@
           </td>
         </tr>
         <tr>
-          <td width="26%"><input name="button" type="button" class="numero" id="button" value="+" onclick="operacion('+')"></td>
+          <td width="26%"><input name="button" type="button" class="numero" id="button" value="+" onclick="operacion(this.value)"></td>
           <td width="21%"><input name="button2" type="button" class="numero" id="button2" value="-" onclick="operacion('-')"></td>
           <td width="21%"><input name="button3" type="button" class="numero" id="button3" value="*" onclick="operacion('*')"></td>
           <td width="32%"><input name="button4" type="button" class="numero" id="button4" value="/" onclick="operacion('/')"></td>
